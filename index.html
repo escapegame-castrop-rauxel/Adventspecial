@@ -4,10 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <title>Escape Game Castrop-Rauxel Rätsel-Bot</title>
-
-<!-- Favicon -->
-<link rel="icon" href="logo-escapegame-castrop-rauxel.png" type="image/png">
-
 <style>
 :root{
     --primary: #007bff;
@@ -16,7 +12,7 @@
 }
 
 /* Body & Hintergrund */
-html, body{
+html,body{
     height:100%;
     margin:0;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,8 +21,8 @@ html, body{
 body {
     display:flex;
     justify-content:center;
-    align-items:flex-start;
-    padding-top: 40px;
+    align-items:flex-start; /* Chat höher positioniert */
+    padding-top: 40px; /* Abstand von oben */
     background: #111 url('2025-11-09_Hintergrund_Webchat_Der_stille_Riese.png') no-repeat center top;
     background-size: cover;
     min-height: 100vh;
@@ -54,9 +50,9 @@ body {
 .chat-wrapper {
     width: 95%;
     max-width: 420px;
-    height: 80vh;
-    max-height: 750px;
-    background: rgba(255,255,255,0.22); /* sichtbar, aber transparent */
+    height: 75vh;
+    max-height: 720px;
+    background: rgba(255,255,255,0.25); /* transparenter */
     backdrop-filter: blur(10px);
     border-radius: 14px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5);
@@ -90,8 +86,11 @@ body {
 }
 
 .bot-msg { justify-content:flex-start; }
-.bot-avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,0.25); }
-.bot-bubble { background: rgba(255,255,255,0.85); border-top-left-radius:4px; max-width:78%; }
+.bot-avatar {
+    width:40px; height:40px; border-radius:50%; object-fit:cover;
+    flex-shrink:0; box-shadow:0 1px 4px rgba(0,0,0,0.25);
+}
+.bot-bubble { background: rgba(255,255,255,0.8); border-top-left-radius:4px; max-width:78%; }
 
 .user-msg { justify-content:flex-end; }
 .user-bubble {
@@ -144,13 +143,13 @@ button[type="submit"]:disabled{ opacity:0.6; cursor:default; }
 
 /* Mobile tweaks */
 @media (max-width:420px){
-    .chat-wrapper { height: 75vh; max-width: 380px; margin-top:25px; }
+    .chat-wrapper { height: 70vh; max-width: 380px; margin-top:20px; } /* höher auf Mobile */
     #countdown { top:10px; right:10px; font-size:1rem; padding:6px 10px; }
 }
 </style>
 </head>
-
 <body>
+
 <div id="countdown">02:00</div>
 
 <div class="chat-wrapper" role="application" aria-label="Rätsel Chat">
@@ -177,7 +176,6 @@ button[type="submit"]:disabled{ opacity:0.6; cursor:default; }
 <audio id="startSound" src="2025-11-09_Soundeffekt_Der_stille_Riese.mp3" preload="auto"></audio>
 
 <script>
-// ----- JavaScript wie vorher, unverändert -----
 const chat = document.getElementById('chat');
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
@@ -217,7 +215,9 @@ function showTypingIndicator(){
 function botReply(html){
     const plain=html.replace(/<[^>]*>/g,''); const delay=Math.min(4500,700+25*plain.length);
     const removeTyping=showTypingIndicator();
-    return new Promise(resolve=>{ setTimeout(()=>{ removeTyping(); addBotMessage(html); resolve(); },delay); });
+    return new Promise(resolve=>{
+        setTimeout(()=>{ removeTyping(); addBotMessage(html); resolve(); },delay);
+    });
 }
 
 function updateCountdownUI(){ document.getElementById('countdown').textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`; }
@@ -228,6 +228,7 @@ function handleExpired(){ if(expiredHandled) return; expiredHandled=true; gameSt
 
 startBtn.addEventListener('click', ()=>{
     addUserMessage('START');
+    // Audio nur über Klick (iOS erlaubt)
     startSound.currentTime=0; startSound.play().catch(()=>{console.warn('Audio blockiert');});
     startBtn.remove();
     startTimer(); gameState='WAIT_ANSWER';
